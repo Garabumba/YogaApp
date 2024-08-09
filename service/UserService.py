@@ -1,6 +1,6 @@
-from users.adapters.repository import UserEntity
-from users.errors.UserErrors import UserAlreadyExists, InvalidPassword
-from users.adapters import repository
+from adapters.repository import UserEntity
+from errors.UserErrors import UserAlreadyExists, InvalidPassword
+from adapters import repository
 import re
 
 def register_user(username: str, email: str, first_name: str, last_name: str, patronymic: str, password: str):

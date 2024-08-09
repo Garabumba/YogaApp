@@ -1,18 +1,12 @@
 import abc
 
 from django.forms import ValidationError
-from users.domain.model import UserEntity
+from domain.model import UserEntity
 from django.contrib.auth import get_user_model
+from .abstract_repository import AbstractRepository
 #from django.contrib.auth.password_validation import validate_password
 
-class AbstractRepository(abc.ABC):
-    @abc.abstractmethod
-    def add(self, user: UserEntity):
-        raise NotImplementedError
 
-    @abc.abstractmethod
-    def get(self, email: str) -> UserEntity:
-        raise NotImplementedError
     
 class DjangoUserRepository(AbstractRepository):
     def add(self, user: UserEntity):
