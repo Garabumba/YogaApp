@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class UserEntity:
@@ -7,5 +7,5 @@ class UserEntity:
     first_name: str
     last_name: str
     patronymic: str
-    password: str
+    password: str = ''
     pk: int = 0

@@ -1,23 +1,19 @@
-import abc
-
-from django.forms import ValidationError
 from domain.model import UserEntity
 from django.contrib.auth import get_user_model
 from .abstract_repository import AbstractRepository
-#from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import FieldError
+from django.contrib.auth import authenticate, login as auth_login
 
-
-    
 class DjangoUserRepository(AbstractRepository):
     def add(self, user: UserEntity):
-        #validate_password(user.password)
-
         django_user = get_user_model()(username=user.username, email=user.email, first_name=user.first_name, last_name=user.last_name, patronymic=user.patronymic, password=user.password)
-        django_user.set_password(user.password)
         django_user.save()
 
     def get(self, **kwargs) -> UserEntity:
-        django_user = get_user_model().objects.filter(**kwargs).first()
+        try:
+            django_user = get_user_model().objects.filter(**kwargs).first()
+        except FieldError:
+            return None
 
         if not django_user:
             return None
@@ -30,3 +26,9 @@ class DjangoUserRepository(AbstractRepository):
             patronymic=django_user.patronymic,
             password=django_user.password
         )
+    
+    def authenticate(self, user: UserEntity, request=None):
+        django_user = authenticate(username=user.username, password=user.password)
+        if django_user and request:
+            auth_login(request, django_user)
+        return django_user

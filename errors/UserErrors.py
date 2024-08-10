@@ -14,10 +14,10 @@ class InvalidPassword(Exception):
     def __str__(self):
         return self.message
 
-class IncorrectLogin(Exception):
+class UserDoesNotExists(Exception):
     def __init__(self):
         super().__init__()
-        self.message = 'Неверный логин или почта'
+        self.message = 'Пользователь с таким логин/email-ом не найден'
 
     def __str__(self):
         return self.message

@@ -1,6 +1,7 @@
 from django.http import JsonResponse
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import login as django_login, logout as django_logout
+from django.contrib.auth import get_user_model
 import json
 from service import UserService
 
@@ -17,7 +18,10 @@ def register(request):
         password = data.get('password', '')
 
         try:
-            result = UserService.register_user(username, email, first_name, last_name, patronymic, password)
+            user = UserService.register_user(username, email, first_name, last_name, patronymic, password)
+            django_user = get_user_model().objects.get(username=user.username)
+            
+            django_login(request, django_user)
         except Exception as ex:
             return JsonResponse({'success': False, 'message': f'{ex}'}, status=400)
 
@@ -34,8 +38,19 @@ def login(request):
         password = data.get('password', '')
 
         try:
-            result = UserService.login(login, password)
+            user = UserService.get_user(login, password)
+            django_user = get_user_model().objects.get(username=user.username)
+            
+            django_login(request, django_user)
         except Exception as ex:
             return JsonResponse({'success': False, 'message': f'{ex}'}, status=400)
 
         return JsonResponse({'success': True}, status=200)
+    
+def me(request):
+    if request.method == "GET":
+        return JsonResponse({'name': request.user.first_name}, status=200)
+
+@csrf_exempt
+def logout(request):
+    django_logout(request)
